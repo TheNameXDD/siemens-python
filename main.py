@@ -5,8 +5,8 @@ from snap7.snap7types import *
 
 #Адреса ПЛК
 plc_address = '192.168.0.1'
-plc_rack = 0
-plc_slot = 1
+plc_rack = 0 #Значение по умолчанию, если в топологии только 1 PLC (rack на данный момент уже не используется, но является обязательным)
+plc_slot = 1 #Значение по умолчанию, если в топологии только 1 PLC (slot является обязательным в любом случае, номер зависит от ПЛК в топологии)
 
 def WriteMemory(plc, byte, bit, datatype, value): #Функция с аргументами чтобы составить запрос
     result = plc.read_area(snap7.types.Areas.MK, 0, byte, datatype) #MK - область памяти к которой обращаемся. DB - база данных, PE - входы, PA - выходы, MK - таблица тегов, TM - таймер, CT - счетчик
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     plc = c.Client() #Создание виртуального клиента
     plc.connect(plc_address, plc_rack, plc_slot) #Подключение к контроллеру по адресу
     connected = plc.get_connected() #Результат подключения к PLC
-    print("Connection to PLC is:", connected)
+    print("Connection to PLC is:", connected) #Сообщаем результат подключения, должно быть isConnected
     WriteMemory(plc, 0, 0, S7WLBit, 1)  #Делаем запрос на def WriteMemory и отправляем туда данные которые необходимо отправить на контроллер. Первый аргумент - адрес контроллера, второй - это номер байта
     #третий - это номер бита в байте, четвертый - это тип памяти к которой мы обращаемся (BOOL тип), пятый - это наше значение которое будет присвоено
     CurrentBit = ReadMemory(plc, 0, 0, S7WLBit)  #Получает данные о состоянии М0.0 в таблице тегов
@@ -36,4 +36,4 @@ if __name__ == "__main__":
 
     #Получаем данные о состоянии контроллера (Run, Stop, Error)
     state = plc.get_cpu_state()
-    print('State:', state)
+    print('State:', state) #Выводим данные о состоянии контроллера
